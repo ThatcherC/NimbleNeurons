@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+from random import *
+
+weights = [0,0,0,0,0,0]				#elements = numneurons*numins
+theta = 0.9
+alpha = 0.99
+a = 0
+y = 0
+target = 0
+dataset = []
+numneurons = 3
+numins = 2
+
+setOne = [0.1,1]
+setTwo = [1,0.1]
+setThree = [1,1]
+setFour = [0.1,0.1]
+
+def setup():
+	global alpha,theta,w1,w2, toasts, weights,y,target
+	print "Starting"
+	theta = 0.9
+	alpha = 0.99
+	a = 0
+	y = 0
+	target = 0
+
+def train(l, tget, neuron):					#trains one neuron (l is training set + target
+	global a,weights,y,target
+	a = 0							#important - reinitialize
+	target = tget
+	for i in range(len(l)):
+		a = a+(l[i]*weights[i+(numins*neuron)])		#adds weights times inputs
+	y = sigma(a)						#squashes
+	for i in range(len(l)):
+		weights[i+(numins*neuron)] += modifyWeight(l[i])
+
+def evaluateNeuron(e, ntget, neuron):
+	global a,weights,y,target
+	target = ntget
+	a=0;							#important - reinitialize
+	for i in range(len(e)):
+		a = a+(e[i]*weights[i+(numins*neuron)])		#adds weights times inputs
+	y = sigma(a)						#squashes
+	print y
+
+#def evaluateNet(inn, outt):
+	
+
+def modifyWeight(inn):
+	return alpha*(target-y)*inn
+	
+
+def sigma(x):
+	return 1/(1+(2.71828**(0-x)))	
+
+setup()
+for p in range(numneurons*numins):
+	weights[p] = random()
+print weights
+for m in range(200):
+	train(setOne,1, 0)
+	train(setTwo,0.1, 0)
+	train(setThree,0.1,0)
+	train(setFour,0.1, 0)
+
+	train(setOne,1, 1)
+	train(setTwo,0.1, 1)
+	train(setThree,0.1,1)
+	train(setFour,0.1, 1)
+
+print weights
+evaluateNeuron(setOne,1, 0)
+evaluateNeuron(setTwo, 0.1, 0)
+evaluateNeuron(setThree,0.1, 0)
+evaluateNeuron(setFour,0.1, 0)
+print "		"
+evaluateNeuron(setOne,1, 1)
+evaluateNeuron(setTwo, 0.1, 1)
+evaluateNeuron(setThree,0.1, 1)
+evaluateNeuron(setFour, 0.1, 1)
