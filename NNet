@@ -5,6 +5,7 @@ from random import *
 numneurons = 6
 numins = 4						#max number of inputs for any neuron
 weights = list(range(numins*numneurons))				#elements = numneurons*numins
+structure = [4,2,4]
 theta = 0.9
 alpha = 0.99
 a = 0
@@ -50,8 +51,15 @@ def evaluateNeuron(e, ntget, neuron):
 	y = sigma(a)						#squashes
 	print y
 
-#def evaluateNet(inn, outt):
-	
+def evaluateNet(inList):
+	if len(inList) != structure[0]:
+		return "Input data doesn't match structure"
+	else:
+		print "Got there"
+		interList = []
+		for i in range(structure[1]):
+			interList.insert(0,evaluateNeuron(inList, i))
+		return interList
 
 def modifyWeight(inn):
 	return alpha*(target-y)*inn
@@ -103,3 +111,6 @@ evaluateNeuron(setOne,1, 1)
 evaluateNeuron(setTwo, 0.1, 1)
 evaluateNeuron(setThree,0.1, 1)
 evaluateNeuron(setFour, 0.1, 1)
+print "		"
+print evaluateNet(setOne)
+print 'Toast'
