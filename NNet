@@ -26,8 +26,8 @@ outFour = [1,1]
 def setup():
 	global alpha,theta,w1,w2, toasts, weights,y,target
 	print "Starting"
-	theta = 0.9
-	alpha = 0.99
+	theta = 0.2
+	alpha = 0.3
 	a = 0
 	y = 0
 	target = 0
@@ -37,19 +37,18 @@ def train(l, tget, neuron):					#trains one neuron (l is training set + target
 	a = 0							#important - reinitialize
 	target = tget
 	for i in range(len(l)):
-		a = a+(l[i]*weights[i+(numins*neuron)])		#adds weights times inputs
+		a = a+(l[i]*weights[i+(numins*neuron)])-theta	#adds weights times inputs
 	y = sigma(a)						#squashes
 	for i in range(len(l)):
 		weights[i+(numins*neuron)] += modifyWeight(l[i])
 
-def evaluateNeuron(e, ntget, neuron):
-	global a,weights,y,target
-	target = ntget
+def evaluateNeuron(e, neuron):
+	global a,weights,y
 	a=0;							#important - reinitialize
 	for i in range(len(e)):
 		a = a+(e[i]*weights[i+(numins*neuron)])		#adds weights times inputs
 	y = sigma(a)						#squashes
-	print y
+	return y
 
 def evaluateNet(inList):
 	if len(inList) != structure[0]:
@@ -58,8 +57,12 @@ def evaluateNet(inList):
 		print "Got there"
 		interList = []
 		for i in range(structure[1]):
-			interList.insert(0,evaluateNeuron(inList, i))
-		return interList
+			interList.insert(0,evaluateNeuron(inList, structure[1]))
+		print interList
+		outputList = []
+		for i in range(structure[1], structure[1]+structure[2]):
+			outputList.insert(0,evaluateNeuron(interList, i))
+		return outputList
 
 def modifyWeight(inn):
 	return alpha*(target-y)*inn
@@ -70,47 +73,69 @@ def sigma(x):
 
 setup()
 for p in range(numneurons*numins):
-	weights[p] = random()
-for m in range(200):
+	weights[p] = random()  
+for m in range(20000):
 	train(setOne,1, 0)					#Intermediary neuron 1
-	train(setTwo,0.1, 0)
+	train(setTwo,0, 0)
 	train(setThree,1,0)
-	train(setFour,0.1, 0)
+	train(setFour,0, 0)
 
 	train(setOne,1, 1)					#Intermediary neuron 2
-	train(setTwo,0.1, 1)
-	train(setThree,0.1,1)
+	train(setTwo,0, 1)
+	train(setThree,0,1)
 	train(setFour,1, 1)
 
-	train(outOne,0.1,2)					#Target '1' output neuron
-	train(outTwo,0.1,2)
-	train(outThree,0.1,2)
+	train(outOne,0,2)					#Target '1' output neuron
+	train(outTwo,0,2)
+	train(outThree,0,2)
 	train(outFour,1,2)
 
 	train(outOne,1,3)					#Target '2' output neuron
-	train(outTwo,0.1,3)
-	train(outThree,0.1,3)
-	train(outFour,0.1,3)
+	train(outTwo,0,3)
+	train(outThree,0,3)
+	train(outFour,0,3)
 
-	train(outOne,0.1,4)
-	train(outTwo,0.1,4)
+	train(outOne,0,4)					#Target'3' output neuron
+	train(outTwo,0,4)
 	train(outThree,1,4)
-	train(outFour,0.1,4)
+	train(outFour,0,4)
 
-	train(outOne,0.1,5)
+	train(outOne,0,5)					#Target '4' output neuron
 	train(outTwo,1,5)
-	train(outThree,0.1,5)
-	train(outFour,0.1,5)
+	train(outThree,0,5)
+	train(outFour,0,5)
 
-evaluateNeuron(setOne,1, 0)
-evaluateNeuron(setTwo, 0.1, 0)
-evaluateNeuron(setThree,1, 0)
-evaluateNeuron(setFour,0.1, 0)
+print evaluateNeuron(setOne,0)
+print evaluateNeuron(setTwo,0)
+print evaluateNeuron(setThree,0)
+print evaluateNeuron(setFour,0)
 print "		"
-evaluateNeuron(setOne,1, 1)
-evaluateNeuron(setTwo, 0.1, 1)
-evaluateNeuron(setThree,0.1, 1)
-evaluateNeuron(setFour, 0.1, 1)
+print evaluateNeuron(setOne,1)
+print evaluateNeuron(setTwo,1)
+print evaluateNeuron(setThree,1)
+print evaluateNeuron(setFour,1)
 print "		"
-print evaluateNet(setOne)
+print evaluateNeuron(outOne,2)
+print evaluateNeuron(outTwo,2)
+print evaluateNeuron(outThree,2)
+print evaluateNeuron(outFour,2)
+print "		"
+print evaluateNeuron(outOne,3)
+print evaluateNeuron(outTwo,3)
+print evaluateNeuron(outThree,3)
+print evaluateNeuron(outFour,3)
+print " "
+print evaluateNeuron(outOne,4)
+print evaluateNeuron(outTwo,4)
+print evaluateNeuron(outThree,4)
+print evaluateNeuron(outFour,4)
+print "		"
+print evaluateNeuron(outOne,5)
+print evaluateNeuron(outTwo,5)
+print evaluateNeuron(outThree,5)
+print evaluateNeuron(outFour,5)
+
+print "		"
+print evaluateNet(setFour)
+
 print 'Toast'
