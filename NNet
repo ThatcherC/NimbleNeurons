@@ -6,75 +6,80 @@ numneurons = 6
 numins = 4						#max number of inputs for any neuron
 weights = list(range(numins*numneurons))				#elements = numneurons*numins
 structure = [4,2,4]
-theta = 0.9
 alpha = 0.99
 a = 0
 y = 0
 target = 0
 dataset = []
 
-setOne = [1,0.1,1,0.1]
-setTwo = [0.1,1,0.1,1]
-setThree = [1,1,0.1,0.1]
-setFour = [0.1,0.1,1,1]
+setOne = [1,0,1,0]
+setTwo = [0,1,0,1]
+setThree = [1,1,0,0]
+setFour = [0,0,1,1]
 
-outOne = [0.1,0.1]
-outTwo = [0.1,1]
-outThree = [1,0.1]
+outOne = [0,0]
+outTwo = [0,1]
+outThree = [1,0]
 outFour = [1,1]
 
+thetas = [-.2,-10,14,-10,14,14]
+
 def setup():
-	global alpha,theta,w1,w2, toasts, weights,y,target
+	global alpha,w1,w2, toasts, weights,y,target
 	print "Starting"
-	theta = 0.2
-	alpha = 0.3
+	alpha = 0.2
 	a = 0
 	y = 0
 	target = 0
 
 def train(l, tget, neuron):					#trains one neuron (l is training set + target
 	global a,weights,y,target
-	a = 0							#important - reinitialize
+	a = 0								#important - reinitialize
 	target = tget
 	for i in range(len(l)):
-		a = a+(l[i]*weights[i+(numins*neuron)])-theta	#adds weights times inputs
-	y = sigma(a)						#squashes
+		a = a+(l[i]*weights[i+(numins*neuron)])-thetas[neuron]	#adds weights times inputs
+	y = activate(a)							#squashes
 	for i in range(len(l)):
 		weights[i+(numins*neuron)] += modifyWeight(l[i])
 
 def evaluateNeuron(e, neuron):
 	global a,weights,y
-	a=0;							#important - reinitialize
+	a=0;								#important - reinitialize
 	for i in range(len(e)):
-		a = a+(e[i]*weights[i+(numins*neuron)])		#adds weights times inputs
-	y = sigma(a)						#squashes
+		a = a+(e[i]*weights[i+(numins*neuron)])-thetas[neuron]	#adds weights times inputs
+		
+	y = activate(a)							#squashes
 	return y
 
 def evaluateNet(inList):
 	if len(inList) != structure[0]:
 		return "Input data doesn't match structure"
 	else:
-		print "Got there"
 		interList = []
 		for i in range(structure[1]):
-			interList.insert(0,evaluateNeuron(inList, structure[1]))
+			interList.insert(0,evaluateNeuron(inList, structure[1]-i-1))
 		print interList
 		outputList = []
 		for i in range(structure[1], structure[1]+structure[2]):
-			outputList.insert(0,evaluateNeuron(interList, i))
+			outputList.insert(0,evaluateNeuron(interList, (structure[2]+structure[1]+1)-i))
 		return outputList
 
 def modifyWeight(inn):
 	return alpha*(target-y)*inn
-	
 
-def sigma(x):
-	return 1/(1+(2.71828**(0-x)))	
+def activate(x):
+	if x >= 0:
+		return 1
+	else:
+		return 0
+
+#=====================Program Starts Here===============================
 
 setup()
+magic = -10
 for p in range(numneurons*numins):
 	weights[p] = random()  
-for m in range(20000):
+for m in range(2000):
 	train(setOne,1, 0)					#Intermediary neuron 1
 	train(setTwo,0, 0)
 	train(setThree,1,0)
@@ -105,37 +110,4 @@ for m in range(20000):
 	train(outThree,0,5)
 	train(outFour,0,5)
 
-print evaluateNeuron(setOne,0)
-print evaluateNeuron(setTwo,0)
-print evaluateNeuron(setThree,0)
-print evaluateNeuron(setFour,0)
-print "		"
-print evaluateNeuron(setOne,1)
-print evaluateNeuron(setTwo,1)
-print evaluateNeuron(setThree,1)
-print evaluateNeuron(setFour,1)
-print "		"
-print evaluateNeuron(outOne,2)
-print evaluateNeuron(outTwo,2)
-print evaluateNeuron(outThree,2)
-print evaluateNeuron(outFour,2)
-print "		"
-print evaluateNeuron(outOne,3)
-print evaluateNeuron(outTwo,3)
-print evaluateNeuron(outThree,3)
-print evaluateNeuron(outFour,3)
-print " "
-print evaluateNeuron(outOne,4)
-print evaluateNeuron(outTwo,4)
-print evaluateNeuron(outThree,4)
-print evaluateNeuron(outFour,4)
-print "		"
-print evaluateNeuron(outOne,5)
-print evaluateNeuron(outTwo,5)
-print evaluateNeuron(outThree,5)
-print evaluateNeuron(outFour,5)
-
-print "		"
-print evaluateNet(setFour)
-
-print 'Toast'
+print evaluateNet(setTwo)
