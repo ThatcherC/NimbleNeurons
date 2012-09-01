@@ -3,8 +3,8 @@
 from random import *
 
 #variables------------------------------------------------
-structure = [4,2,4]
-maxIns = 4
+structure = [4,2,4]						#structure of network - input, intermediate, outs
+maxIns = 4							#greatest number of inputs for any neuron
 weights = list(range((structure[1]+structure[2])*maxIns))
 pweights = list(range(len(weights)))
 
@@ -22,13 +22,13 @@ alpha = 0
 
 #functions------------------------------------------------
 
-def setup():				#setup weights, globals
-	global alpha
+def setup():				#setup variables
+	global alpha			#import globals to modify
 	print 'go'
 	alpha = 0.1
 
 def train(l, tget, neuron):					#trains one neuron (l is training set + target
-	global a,weights,y,target
+	global a,weights,y,target					#import globals
 	a = 0								#important - reinitialize
 	target = tget
 	for i in range(len(l)):
@@ -36,7 +36,6 @@ def train(l, tget, neuron):					#trains one neuron (l is training set + target
 	y = activate(a)							#squashes
 	for i in range(len(l)):
 		weights[i+(maxIns*neuron)] += modifyWeight(l[i])
-	#return weights
 
 def evaluateNeuron(e, neuron):
 	global a,weights,y
@@ -63,20 +62,22 @@ def evaluateNet(inList):
 def modifyWeight(inn):
 	return alpha*(target-y)*inn*dactivate(a)
 
-def activate(x):
+def activate(x):						#Activation function
 	return 1/(1+(2.71828**(0-(x/4))))
 
-def dactivate(x):
-	return (activate(x+0.01)-activate(x-0.01))/.02
+def dactivate(x):						#Approximate derivative of the activation 
+	return (activate(x+0.01)-activate(x-0.01))/.02		#function. Returns the slope of a certain point
+	
 
 #program----------------------------------------------------------
 
 setup()
-for p in range((structure[1]+structure[2])*maxIns):
+for p in range((structure[1]+structure[2])*maxIns):		#Initialize weights randomly
 	weights[p] = random()
-	pweights[p] = weights[p]
+	pweights[p] = weights[p]				
 
-#print weights
+#print weights							#Uncomment to print initial random weights
+
 for m in range(20000):
 	train(setOne,1, 0)					#Intermediary neuron 1
 	train(setTwo,0, 0)
