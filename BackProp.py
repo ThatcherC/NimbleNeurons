@@ -1,9 +1,12 @@
 #!/usr/bin/python
 
+from random import *
+
 #variables------------------------------------------------
 structure = [4,2,4]
 maxIns = 4
 weights = list(range((structure[1]+structure[2])*maxIns))
+pweights = list(range(len(weights)))
 
 setOne = [1,0,1,0]
 setTwo = [0,1,0,1]
@@ -15,26 +18,31 @@ outTwo = [0,1]
 outThree = [1,0]
 outFour = [1,1]
 
+alpha = 0
+
 #functions------------------------------------------------
 
 def setup():				#setup weights, globals
+	global alpha
 	print 'go'
+	alpha = 0.1
 
 def train(l, tget, neuron):					#trains one neuron (l is training set + target
 	global a,weights,y,target
 	a = 0								#important - reinitialize
 	target = tget
 	for i in range(len(l)):
-		a = a+(l[i]*weights[i+(numins*neuron)])#-thetas[neuron]	#adds weights times inputs
+		a = a+(l[i]*weights[i+(maxIns*neuron)])			#adds weights times inputs
 	y = activate(a)							#squashes
 	for i in range(len(l)):
-		weights[i+(numins*neuron)] += modifyWeight(l[i])
+		weights[i+(maxIns*neuron)] += modifyWeight(l[i])
+	#return weights
 
 def evaluateNeuron(e, neuron):
 	global a,weights,y
 	a=0;								#important - reinitialize
 	for i in range(len(e)):
-		a = a+(e[i]*weights[i+(numins*neuron)])#-thetas[neuron]	#adds weights times inputs
+		a = a+(e[i]*weights[i+(maxIns*neuron)])#-thetas[neuron]	#adds weights times inputs
 		
 	y = activate(a)							#squashes
 	return y
@@ -55,9 +63,52 @@ def evaluateNet(inList):
 def modifyWeight(inn):
 	return alpha*(target-y)*inn*dactivate(a)
 
-
 def activate(x):
-	return 1/(1+(2.71828**(0-x)))
+	return 1/(1+(2.71828**(0-(x/4))))
 
 def dactivate(x):
 	return (activate(x+0.01)-activate(x-0.01))/.02
+
+#program----------------------------------------------------------
+
+setup()
+for p in range((structure[1]+structure[2])*maxIns):
+	weights[p] = random()
+	pweights[p] = weights[p]
+
+#print weights
+for m in range(20000):
+	train(setOne,1, 0)					#Intermediary neuron 1
+	train(setTwo,0, 0)
+	train(setThree,1,0)
+	train(setFour,0, 0)
+
+	train(setOne,1, 1)					#Intermediary neuron 2
+	train(setTwo,0, 1)
+	train(setThree,0,1)
+	train(setFour,1, 1)
+
+	train(outOne,0,2)					#Target '1' output neuron
+	train(outTwo,0,2)
+	train(outThree,0,2)
+	train(outFour,1,2)
+
+	train(outOne,1,3)					#Target '2' output neuron
+	train(outTwo,0,3)
+	train(outThree,0,3)
+	train(outFour,0,3)
+
+	train(outOne,0,4)					#Target'3' output neuron
+	train(outTwo,0,4)
+	train(outThree,1,4)
+	train(outFour,0,4)
+
+	train(outOne,0,5)					#Target '4' output neuron
+	train(outTwo,1,5)
+	train(outThree,0,5)
+	train(outFour,0,5)
+
+for i in range(len(weights)):
+	print pweights[i]-weights[i]
+
+print evaluateNet(setOne)
